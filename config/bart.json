@@ -1,17 +1,17 @@
 {
   "train": {
-    "path": "/content/drive/MyDrive/BART/datasets/imdb_train.csv",
+    "path": "./datasets/imdb_train.csv",
     "shuffle": true,
     "batch_size": 64
   },
   "test": {
-    "path": "/content/drive/MyDrive/BART/datasets/imdb_test.csv",
+    "path": "./datasets/imdb_test.csv",
     "shuffle": false,
     "batch_size": 64
   },
   "lr": 0.0001,
   "wd": 0.00001,
-  "save_dir": "/content/drive/MyDrive/BART/output",
+  "save_dir": "./output",
   "epoch": 20,
   "scheduler": "linear_warm_up"
 }
