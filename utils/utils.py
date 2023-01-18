@@ -52,6 +52,7 @@ class AverageMeter(object):
         self.val = val
         self.avg = val
         self.sum = val * weight
+        self.count += weight
         self.initialized = True
 
     def update(self, val, weight=1):
