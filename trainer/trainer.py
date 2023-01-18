@@ -16,7 +16,7 @@ def accuracy(predict, label):
 
 class Trainer:
     def __init__(self, model, criterion, num_epoch, optimizer, device, train_loader, test_loader, save_dir,
-                 lr_scheduler=None, logger=False):
+                 lr_scheduler=None, logger=False, freeze_backbone=False):
         self.model = model
         self.criterion = criterion
         self.num_epoch = num_epoch
@@ -25,19 +25,14 @@ class Trainer:
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.save_dir = save_dir
+        if not os.path.exists(save_dir):
+            os.mkdir(save_dir)
         self.lr_scheduler = lr_scheduler
         self.logger = logger
         self.current_epoch = 0
         self.best_acc = 0
-        self.prepare_finetune()
-
-    def prepare_finetune(self):
-        if self.model.module:  # DataParallel
-            for p in self.model.module.bart.parameters():
-                p.requires_grad = False
-        else:
-            for p in self.model.bart.parameters():
-                p.requires_grad = False
+        if freeze_backbone:
+            self.prepare_finetune()
         count_grad = 0
         count_freeze = 0
         for p in self.model.parameters():
@@ -46,6 +41,14 @@ class Trainer:
             else:
                 count_freeze += 1
         print(colored(f"freezing: {count_freeze} weights, update: {count_grad} weights", "red"))
+
+    def prepare_finetune(self):
+        if self.model.module:  # DataParallel
+            for p in self.model.module.bart.parameters():
+                p.requires_grad = False
+        else:
+            for p in self.model.bart.parameters():
+                p.requires_grad = False
 
     def _train_epoch(self, epoch):
         self.model.train()
