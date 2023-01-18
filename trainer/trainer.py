@@ -5,13 +5,24 @@ from torch.nn.utils import clip_grad_norm_
 from utils.utils import AverageMeter
 from termcolor import colored
 import wandb
+import numpy as np
 
 
-def accuracy(predict, label):
+def accuracy(predict, label, num_classes=2):
     predict = predict.view(-1)
     label = label.view(-1)
-    TP = torch.sum(predict.eq(label))
-    return TP / predict.numel()
+    assert len(torch.unique(predict)) <= num_classes and len(
+        torch.unique(label)) <= num_classes, 'invalid prediction, check it!'
+    acc = []
+    for c in range(num_classes):
+        p = torch.where(predict == c, 1, 0)
+        l = torch.where(label == c, 1, 0)
+        TP = (p * l).sum()
+        TN = ((1 - p) * (1 - l)).sum()
+        FP = (p * (1 - l)).sum()
+        FN = ((1 - p) * l).sum()
+        acc.append(((TP + TN) / (TP + TN + FP + FN)).item())
+    return np.mean(acc)
 
 
 class Trainer:
