@@ -77,6 +77,7 @@ class Trainer:
             result = {"loss": loss_meter.average(),
                       "acc": acc_meter.average(),
                       "lr": lr}
+            wandb.log({'train/lr': lr})
             pbar.set_postfix(result)
         return result
 
@@ -120,7 +121,6 @@ class Trainer:
             train_result = self._train_epoch(epoch)
             train_loss = train_result['loss']
             train_acc = train_result['acc']
-            lr = train_result['lr']
 
             test_result = self._eval_epoch(epoch)
             test_loss = test_result['loss']
@@ -128,7 +128,6 @@ class Trainer:
             if self.logger:
                 wandb.log({'train/loss': train_loss})
                 wandb.log({'train/acc': train_acc})
-                wandb.log({'train/lr': lr})
                 wandb.log({'test/loss': test_loss})
                 wandb.log({'test/acc': test_acc})
             test_result['state_dict'] = self.model.module.state_dict() if self.model.module else self.model.state_dict()
