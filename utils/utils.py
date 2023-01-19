@@ -5,7 +5,9 @@
 # Written by Ross Girshick
 # --------------------------------------------------------
 import time
-
+import json
+from pathlib import Path
+import torch
 
 class Timer(object):
     """A simple timer."""
@@ -78,3 +80,18 @@ class AverageMeter(object):
 def intersect_dicts(da, db, exclude=()):
     # Dictionary intersection of matching keys and shapes, omitting 'exclude' keys, using da values
     return {k: v for k, v in da.items() if k in db and not any(x in k for x in exclude) and v.shape == db[k].shape}
+
+def read_json(fname):
+    ''' read json file '''
+    fname = Path(fname)
+    with fname.open('r') as handle:
+        return json.load(handle)
+
+def text_collate(batch, tokenizer, device):
+    targets = []
+    texts = []
+    for _, sample in enumerate(batch):
+        texts.append(sample[0])
+        targets.append(sample[1])
+    output_text = tokenizer(texts, padding=True, return_tensors='pt')
+    return output_text.to(device), torch.tensor(targets, dtype=torch.long).to(device)

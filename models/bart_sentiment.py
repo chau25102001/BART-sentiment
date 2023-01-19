@@ -28,19 +28,23 @@ class BartClassificationHead(nn.Module):
 
 
 class BartSentimentAnalysis(nn.Module):
-    def __init__(self, config: BartConfig, pretrained: bool = False):
+    def __init__(self, num_labels=2, pretrained: str = None):
         super(BartSentimentAnalysis, self).__init__()
-        self.config = config
-        if pretrained:
-            self.bart = BartModel.from_pretrained('facebook/bart-base')
-            self.tokenizer = BartTokenizer.from_pretrained('facebook/bart-base')
+        if pretrained is not None:
+            self.config = BartConfig.from_pretrained(pretrained)
+            self.bart = BartModel.from_pretrained(pretrained)
+            self.tokenizer = BartTokenizer.from_pretrained(pretrained)
         else:
-            self.bart = BartModel(config=config)
+            self.config = BartConfig()
+            self.bart = BartModel(config=self.config)
             self.tokenizer = BartTokenizer()
-        self.classifier = BartClassificationHead(config.d_model,
-                                                 config.d_model,
-                                                 config.num_labels,
-                                                 config.classifier_dropout, )
+        
+        self.config.num_labels = num_labels
+
+        self.classifier = BartClassificationHead(self.config.d_model,
+                                                 self.config.d_model,
+                                                 self.config.num_labels,
+                                                 self.config.classifier_dropout, )
 
     def forward(self, tokenized_input):
         """

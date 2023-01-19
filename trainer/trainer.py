@@ -26,23 +26,20 @@ def accuracy(predict, label, num_classes=2):
 
 
 class Trainer:
-    def __init__(self, model, criterion, num_epoch, optimizer, device, train_loader, test_loader, save_dir,
-                 lr_scheduler=None, logger=False, freeze_backbone=False):
+    def __init__(self, model, config, criterion, optimizer, device, train_loader, test_loader,
+                 lr_scheduler=None, logger=False):
         self.model = model
         self.criterion = criterion
-        self.num_epoch = num_epoch
+        self.config = config
         self.optimizer = optimizer
         self.device = device
         self.train_loader = train_loader
         self.test_loader = test_loader
-        self.save_dir = save_dir
-        if not os.path.exists(save_dir):
-            os.mkdir(save_dir)
         self.lr_scheduler = lr_scheduler
         self.logger = logger
         self.current_epoch = 0
         self.best_acc = 0
-        if freeze_backbone:
+        if config['freeze_backbone']:
             self.prepare_finetune()
         count_grad = 0
         count_freeze = 0
@@ -68,11 +65,9 @@ class Trainer:
         result = None
         loss_meter = AverageMeter()
         acc_meter = AverageMeter()
-        for i, (inputs, labels) in pbar:
-            input_ids = inputs['input_ids'].to(self.device)
-            attn_mask = inputs['attention_mask'].to(self.device)
-            inputs = {'input_ids': input_ids, 'attention_mask': attn_mask}
-            labels = labels.to(self.device)
+
+        for _, (inputs, labels) in pbar:
+            # to('cuda') is handled in text_collate function of dataloader
             logits = self.model(inputs)
             self.optimizer.zero_grad()
             loss = self.criterion(logits, labels)
@@ -100,10 +95,8 @@ class Trainer:
         loss_meter = AverageMeter()
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
-            input_ids = inputs['input_ids'].to(self.device)
-            attn_mask = inputs['attention_mask'].to(self.device)
-            inputs = {'input_ids': input_ids, 'attention_mask': attn_mask}
-            labels = labels.to(self.device)
+            # to('cuda') is handled in text_collate function of dataloader
+            
             with torch.no_grad():
                 logits = self.model(inputs)
                 loss = self.criterion(logits, labels)
@@ -117,7 +110,7 @@ class Trainer:
         return result
 
     def _load_model(self):
-        checkpoint = torch.load(os.path.join(self.save_dir, 'checkpoint_last.pt'), map_location=self.device)
+        checkpoint = torch.load(os.path.join(self.config['save_dir'], 'checkpoint_last.pt'), map_location=self.device)
         self.model.module.load_state_dict(checkpoint['state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer'])
         self.optimizer.param_groups[0]['capturable'] = True
@@ -128,7 +121,7 @@ class Trainer:
     def train(self, resume=False):
         if resume:
             self._load_model()
-        for epoch in range(self.current_epoch, self.num_epoch):
+        for epoch in range(self.current_epoch, self.config['epoch']):
             train_result = self._train_epoch(epoch)
             train_loss = train_result['loss']
             train_acc = train_result['acc']
@@ -146,5 +139,5 @@ class Trainer:
             test_result['lr_scheduler'] = self.lr_scheduler.state_dict() if self.lr_scheduler else None
             test_result['epoch'] = epoch
             if test_acc > self.best_acc:
-                torch.save(test_result, os.path.join(self.save_dir, 'checkpoint_best.pt'))
-            torch.save(test_result, os.path.join(self.save_dir, 'checkpoint_last.pt'))
+                torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_best.pt'))
+            torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_last.pt'))

@@ -1,0 +1,64 @@
+{
+    "name": "BART",
+    "n_gpu": 1,
+    "save_dir": "./saved/",
+    "epoch":100,
+    "freeze_backbone": false,
+
+    "#comment": "pretrained = None -> null",
+    "arch": {
+      "type": "BartSentimentAnalysis",
+      "pretrained": "facebook/bart-base",
+      "kwargs": {
+        "num_labels":2
+        }
+    },
+
+    "train_set":{
+        "type": "IMDBDataset",
+        "kwargs":{
+            "csv_path": "./datasets/imdb_train.csv"
+        }
+    },
+    
+    "test_set":{
+        "type": "IMDBDataset",
+        "kwargs":{
+            "csv_path": "./datasets/imdb_test.csv"
+        }
+    },
+    
+    "train_loader":{
+        "type": "DataLoader",
+        "kwargs":{
+            "batch_size": 64,
+            "shuffle":true,
+            "collate_fn":"text_collate"
+        }
+    },
+
+    "test_loader":{
+        "type": "DataLoader",
+        "kwargs":{
+            "batch_size": 64,
+            "shuffle":false,
+            "collate_fn":"text_collate"
+        }
+    },
+
+    "#comment1": "losses are defined in loss.py file",
+    "criterion":{
+        "type": "cross_entropy",
+        "kwargs":{}
+    },
+
+    "optimizer":{
+        "type":"AdamW",
+        "kwargs":{
+            "lr": 1e-4
+        }
+    },
+
+    "lr_scheduler": "get_linear_schedule_with_warmup"
+}
+  

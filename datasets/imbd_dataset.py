@@ -1,7 +1,5 @@
-import numpy as np
 import pandas as pd
-import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from transformers import BartTokenizer
 
 
@@ -31,14 +29,3 @@ class IMDBDataset(Dataset):
             text = text[:self.max_seq_length]
         label = int(self.label[item])
         return text, label
-
-
-def text_collate(batch, tokenizer: BartTokenizer):
-    targets = []
-    texts = []
-    for _, sample in enumerate(batch):
-        texts.append(sample[0])
-        targets.append(sample[1])
-    output_text = tokenizer(texts, padding=True, return_tensors='pt')
-    return output_text, torch.tensor(targets, dtype=torch.long)
-
