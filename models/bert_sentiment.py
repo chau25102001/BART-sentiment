@@ -16,6 +16,7 @@ class BertSentimentAnalysis(nn.Module):
             self.tokenizer = BertTokenizer()
             self.config = BertConfig()
 
+        self.config.classifier_dropout = 0.5
         self.classifier = MLPHead(self.config.hidden_size,
                                     self.config.hidden_size,
                                     num_labels,
