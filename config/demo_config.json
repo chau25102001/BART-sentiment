@@ -8,8 +8,8 @@
     "#comment": "pretrained = None -> null",
     "arch": {
       "type": "BartSentimentAnalysis",
-      "pretrained": "facebook/bart-base",
       "kwargs": {
+        "pretrained": "facebook/bart-base",
         "num_labels":2
         }
     },

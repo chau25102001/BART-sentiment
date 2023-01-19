@@ -26,6 +26,7 @@ def train(args):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = config.init_obj(model_module, "arch")
+    tokenizer = model.tokenizer
     model = DataParallel(model).to(device)
 
     print(f"Model: {config['name']}, num params: {sum(p.numel() for p in model.parameters())}")
@@ -34,7 +35,6 @@ def train(args):
     train_set = config.init_obj(dataset_module, "train_set")
     test_set = config.init_obj(dataset_module, "test_set")
     
-    tokenizer = model.tokenizer
     collate_fn = lambda batch: text_collate(batch, tokenizer, device)
     train_loader = config.init_obj(torch.utils.data, "train_loader")(dataset=train_set, collate_fn=collate_fn)
     test_loader = config.init_obj(torch.utils.data, "train_loader")(dataset=test_set, collate_fn=collate_fn)
