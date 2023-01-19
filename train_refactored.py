@@ -17,7 +17,7 @@ from config_parser import ConfigParser
 from utils.utils import text_collate
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--resume", default=False, action="store-true", help="resume training?")
+parser.add_argument("--resume", default=False, action="store_true", help="resume training?")
 parser.add_argument("--config", default="./config/demo_config.json", type=str, help="path to config file")
 args = parser.parse_args()
 
