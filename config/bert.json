@@ -1,0 +1,54 @@
+{
+    "name": "BERT-linear",
+    "n_gpu": 1,
+    "save_dir": "./saved/",
+    "epoch": 20,
+    "freeze_backbone": false,
+    "#comment": "pretrained = None -> null",
+    "arch": {
+      "type": "BartSentimentAnalysis",
+      "kwargs": {
+        "pretrained": "bert-base-cased",
+        "num_labels": 2
+      }
+    },
+    "train_set": {
+      "type": "IMDBDataset",
+      "kwargs": {
+        "csv_path": "./datasets/train_clean.csv"
+      }
+    },
+    "test_set": {
+      "type": "IMDBDataset",
+      "kwargs": {
+        "csv_path": "./datasets/test_clean.csv"
+      }
+    },
+    "train_loader": {
+      "type": "DataLoader",
+      "kwargs": {
+        "batch_size": 64,
+        "shuffle": true
+      }
+    },
+    "test_loader": {
+      "type": "DataLoader",
+      "kwargs": {
+        "batch_size": 64,
+        "shuffle": false
+      }
+    },
+    "#comment1": "losses are defined in loss.py file",
+    "criterion": {
+      "type": "cross_entropy",
+      "kwargs": {}
+    },
+    "optimizer": {
+      "type": "AdamW",
+      "kwargs": {
+        "lr": 1e-4
+      }
+    },
+    "lr_scheduler": "linear_warm_up"
+  }
+    
