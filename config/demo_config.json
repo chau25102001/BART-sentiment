@@ -13,7 +13,7 @@
         "num_labels":2
         }
     },
-
+    
     "train_set":{
         "type": "IMDBDataset",
         "kwargs":{
@@ -32,8 +32,7 @@
         "type": "DataLoader",
         "kwargs":{
             "batch_size": 64,
-            "shuffle":true,
-            "collate_fn":"text_collate"
+            "shuffle":true
         }
     },
 
@@ -41,8 +40,7 @@
         "type": "DataLoader",
         "kwargs":{
             "batch_size": 64,
-            "shuffle":false,
-            "collate_fn":"text_collate"
+            "shuffle":false
         }
     },
 
@@ -59,6 +57,6 @@
         }
     },
 
-    "lr_scheduler": "get_linear_schedule_with_warmup"
+    "lr_scheduler": "linear_warm_up"
 }
   

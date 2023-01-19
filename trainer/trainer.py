@@ -60,7 +60,7 @@ class Trainer:
 
     def _train_epoch(self, epoch):
         self.model.train()
-        pbar = tqdm(enumerate(self.train_loader), desc=f'Train epoch {epoch + 1}/{self.num_epoch}: ',
+        pbar = tqdm(enumerate(self.train_loader), desc=f'Train epoch {epoch + 1}/{self.config["epoch"]}: ',
                     total=len(self.train_loader))
         result = None
         loss_meter = AverageMeter()
@@ -89,14 +89,14 @@ class Trainer:
 
     def _eval_epoch(self, epoch):
         self.model.eval()
-        pbar = tqdm(enumerate(self.test_loader), desc=f'Eval epoch {epoch + 1}/{self.num_epoch}: ',
+        pbar = tqdm(enumerate(self.test_loader), desc=f'Eval epoch {epoch + 1}/{self.config["epoch"]}: ',
                     total=len(self.test_loader))
         result = None
         loss_meter = AverageMeter()
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
             # to('cuda') is handled in text_collate function of dataloader
-            
+
             with torch.no_grad():
                 logits = self.model(inputs)
                 loss = self.criterion(logits, labels)

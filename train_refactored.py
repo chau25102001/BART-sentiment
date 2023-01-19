@@ -12,7 +12,7 @@ from trainer.trainer import Trainer
 from torch.nn import DataParallel
 from transformers.optimization import get_linear_schedule_with_warmup
 from torch.optim.lr_scheduler import CosineAnnealingLR
-# import wandb
+import wandb
 from config_parser import ConfigParser
 from utils.utils import text_collate
 
@@ -36,10 +36,10 @@ def train(args):
     test_set = config.init_obj(dataset_module, "test_set")
     
     collate_fn = lambda batch: text_collate(batch, tokenizer, device)
-    train_loader = config.init_obj(torch.utils.data, "train_loader")(dataset=train_set, collate_fn=collate_fn)
-    test_loader = config.init_obj(torch.utils.data, "train_loader")(dataset=test_set, collate_fn=collate_fn)
+    train_loader = config.init_obj(torch.utils.data, "train_loader", dataset=train_set, collate_fn=collate_fn)
+    test_loader = config.init_obj(torch.utils.data, "train_loader", dataset=test_set, collate_fn=collate_fn)
     
-    optimizer = config.init_obj(torch.optim, "optimizer")(model.parameters())
+    optimizer = config.init_obj(torch.optim, "optimizer", model.parameters())
 
     #TODO: lr scheduler
     if config['lr_scheduler'] is not None:
@@ -63,10 +63,10 @@ def train(args):
                       test_loader=test_loader,
                       lr_scheduler=lr_scheduler,
                       logger=False)
-    # trainer.train(resume=args.resume)
+    trainer.train(resume=args.resume)
 
 if __name__ == "__main__":
 
-    # wandb.init(project="BART-sentiment-analysis")
-    # warnings.filterwarnings('ignore')
+    wandb.init(project="BART-sentiment-analysis")
+    warnings.filterwarnings('ignore')
     train(args)

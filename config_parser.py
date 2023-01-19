@@ -20,7 +20,7 @@ class ConfigParser:
         """
         module_name = self.config[obj]['type']
         module_kwargs = self.config[obj]['kwargs']
-        module_kwargs.update(*kwargs)
+        module_kwargs.update(kwargs)
         return getattr(module, module_name)(*args, **module_kwargs)
 
     def __getitem__(self, name):
