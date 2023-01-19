@@ -9,7 +9,7 @@ class BertSentimentAnalysis(nn.Module):
         
         if pretrained is not None:
             self.bert = BertModel.from_pretrained(pretrained)
-            self.tokenizer = BertModel.from_pretrained(pretrained)
+            self.tokenizer = BertTokenizer.from_pretrained(pretrained)
             self.config = BertConfig.from_pretrained(pretrained)
         else:
             self.bert = BertModel()
@@ -26,7 +26,6 @@ class BertSentimentAnalysis(nn.Module):
         """
             inputs: Dict, contains 'input_ids': tensor of ids of the input string after tokenizer, and 'attention_mask' for encoder
         """
-        inputs.pop("token_type_ids")
         outputs = self.bert(**inputs)
         cls_tokens = outputs[1]
         logits = self.classifier(cls_tokens)
