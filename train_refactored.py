@@ -1,4 +1,5 @@
 import argparse
+import warnings
 
 import termcolor
 import torch
@@ -65,7 +66,6 @@ def train(args):
     # trainer.train(resume=args.resume)
 
 if __name__ == "__main__":
-    import warnings
 
     # wandb.init(project="BART-sentiment-analysis")
     # warnings.filterwarnings('ignore')
