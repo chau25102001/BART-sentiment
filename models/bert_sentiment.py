@@ -16,7 +16,7 @@ class BertSentimentAnalysis(nn.Module):
             self.tokenizer = BertTokenizer()
             self.config = BertConfig()
 
-        self.config.classifier_dropout = 0.5
+        self.config.classifier_dropout = 0.5    
         self.classifier = MLPHead(self.config.hidden_size,
                                     self.config.hidden_size,
                                     num_labels,
@@ -26,6 +26,7 @@ class BertSentimentAnalysis(nn.Module):
         """
             inputs: Dict, contains 'input_ids': tensor of ids of the input string after tokenizer, and 'attention_mask' for encoder
         """
+        inputs.pop("token_type_ids")
         outputs = self.bert(**inputs)
         cls_tokens = outputs[1]
         logits = self.classifier(cls_tokens)
