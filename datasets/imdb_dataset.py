@@ -12,6 +12,7 @@ class IMDBDataset(Dataset):
         self.from_csv(csv_path)
         self.max_seq_length = 1021
         self.from_csv(self.csv_path)
+        print("data set size: ", len(self.text))
 
     def __len__(self):
         return len(self.text)
@@ -25,7 +26,5 @@ class IMDBDataset(Dataset):
 
     def __getitem__(self, item):
         text = self.text[item]
-        if len(text) > self.max_seq_length:
-            text = text[:self.max_seq_length]
         label = int(self.label[item])
         return text, label

@@ -8,6 +8,8 @@ import time
 import json
 from pathlib import Path
 import torch
+from transformers import BartTokenizer
+
 
 class Timer(object):
     """A simple timer."""
@@ -81,17 +83,20 @@ def intersect_dicts(da, db, exclude=()):
     # Dictionary intersection of matching keys and shapes, omitting 'exclude' keys, using da values
     return {k: v for k, v in da.items() if k in db and not any(x in k for x in exclude) and v.shape == db[k].shape}
 
+
 def read_json(fname):
     ''' read json file '''
     fname = Path(fname)
     with fname.open('r') as handle:
         return json.load(handle)
 
-def text_collate(batch, tokenizer, device):
+
+def text_collate(batch, tokenizer: BartTokenizer, device, max_seq_length=256):
     targets = []
     texts = []
     for _, sample in enumerate(batch):
         texts.append(sample[0])
         targets.append(sample[1])
-    output_text = tokenizer(texts, padding=True, return_tensors='pt')
+    output_text = tokenizer(texts, padding=True, return_tensors='pt', truncation=True, max_length=max_seq_length)
+
     return output_text.to(device), torch.tensor(targets, dtype=torch.long).to(device)

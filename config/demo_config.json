@@ -2,13 +2,14 @@
   "name": "BART",
   "n_gpu": 1,
   "save_dir": "./saved/",
-  "epoch": 100,
+  "epoch": 10,
+  "max_seq_length": 352,
   "freeze_backbone": false,
   "#comment": "pretrained = None -> null",
   "arch": {
     "type": "BartSentimentAnalysis",
     "kwargs": {
-      "pretrained": "facebook/bart-base",
+      "pretrained": "lucadiliello/bart-small",
       "num_labels": 2
     }
   },
@@ -27,14 +28,14 @@
   "train_loader": {
     "type": "DataLoader",
     "kwargs": {
-      "batch_size": 64,
+      "batch_size": 32,
       "shuffle": true
     }
   },
   "test_loader": {
     "type": "DataLoader",
     "kwargs": {
-      "batch_size": 64,
+      "batch_size": 32,
       "shuffle": false
     }
   },

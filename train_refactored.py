@@ -21,6 +21,7 @@ parser.add_argument("--resume", default=False, action="store_true", help="resume
 parser.add_argument("--config", default="./config/demo_config.json", type=str, help="path to config file")
 args = parser.parse_args()
 
+
 def train(args):
     config = ConfigParser(args)
 
@@ -31,31 +32,31 @@ def train(args):
 
     print(f"Model: {config['name']}, num params: {sum(p.numel() for p in model.parameters())}")
 
-
     train_set = config.init_obj(dataset_module, "train_set")
     test_set = config.init_obj(dataset_module, "test_set")
-    
-    collate_fn = lambda batch: text_collate(batch, tokenizer, device)
+
+    collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config.config['max_seq_length'])
     train_loader = config.init_obj(torch.utils.data, "train_loader", dataset=train_set, collate_fn=collate_fn)
     test_loader = config.init_obj(torch.utils.data, "train_loader", dataset=test_set, collate_fn=collate_fn)
-    
+
     optimizer = config.init_obj(torch.optim, "optimizer", model.parameters())
 
-    #TODO: lr scheduler
+    # TODO: lr scheduler
     if config['lr_scheduler'] is not None:
         if config['lr_scheduler'] == 'cosine':  # cosine decrease lr
-                lr_scheduler = CosineAnnealingLR(optimizer, T_max=config["epoch"] * len(train_loader),
-                                                eta_min=1e-6)
-        elif config['lr_scheduler'] == 'linear_warm_up':  # warm up from 0 to init lr for 1 epoch, linear decrease for the rest
+            lr_scheduler = CosineAnnealingLR(optimizer, T_max=config["epoch"] * len(train_loader),
+                                             eta_min=1e-6)
+        elif config[
+            'lr_scheduler'] == 'linear_warm_up':  # warm up from 0 to init lr for 1 epoch, linear decrease for the rest
             lr_scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=len(train_loader),
-                                                            num_training_steps=len(train_loader) * config['epoch'])
+                                                           num_training_steps=len(train_loader) * config['epoch'])
         else:
             print(termcolor.colored("Warning: not supported lr scheduler, using default: None", 'red'))
-    
+
     criterion = config.init_obj(loss_module, "criterion")
 
     trainer = Trainer(model=model,
-                      config = config,
+                      config=config,
                       criterion=criterion,
                       optimizer=optimizer,
                       device=device,
@@ -65,8 +66,8 @@ def train(args):
                       logger=False)
     trainer.train(resume=args.resume)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     wandb.init(project="BART-sentiment-analysis")
     warnings.filterwarnings('ignore')
     train(args)
