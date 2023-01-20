@@ -2,7 +2,7 @@ import torch
 
 
 class SAM(torch.optim.Optimizer):
-    def __init__(self, params, base_optimizer, rho=0.05, adaptive=False, **kwargs):
+    def __init__(self, params, base_optimizer=torch.optim.SGD, rho=0.05, adaptive=False, **kwargs):
         assert rho >= 0.0, f"Invalid rho, should be non-negative: {rho}"
 
         defaults = dict(rho=rho, adaptive=adaptive, **kwargs)
@@ -47,15 +47,16 @@ class SAM(torch.optim.Optimizer):
         self.second_step()
 
     def _grad_norm(self):
-        shared_device = self.param_groups[0]["params"][0].device  # put everything on the same device, in case of model parallelism
+        shared_device = self.param_groups[0]["params"][
+            0].device  # put everything on the same device, in case of model parallelism
         norm = torch.norm(
-                    torch.stack([
-                        ((torch.abs(p) if group["adaptive"] else 1.0) * p.grad).norm(p=2).to(shared_device)
-                        for group in self.param_groups for p in group["params"]
-                        if p.grad is not None
-                    ]),
-                    p=2
-               )
+            torch.stack([
+                ((torch.abs(p) if group["adaptive"] else 1.0) * p.grad).norm(p=2).to(shared_device)
+                for group in self.param_groups for p in group["params"]
+                if p.grad is not None
+            ]),
+            p=2
+        )
         return norm
 
     def load_state_dict(self, state_dict):
