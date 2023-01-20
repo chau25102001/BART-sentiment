@@ -35,7 +35,7 @@ def train(args):
     train_set = config.init_obj(dataset_module, "train_set")
     test_set = config.init_obj(dataset_module, "test_set")
 
-    collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config.config['max_seq_length'])
+    collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config['max_seq_length'])
     train_loader = config.init_obj(torch.utils.data, "train_loader", dataset=train_set, collate_fn=collate_fn)
     test_loader = config.init_obj(torch.utils.data, "train_loader", dataset=test_set, collate_fn=collate_fn)
 
