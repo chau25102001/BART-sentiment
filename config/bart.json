@@ -45,7 +45,7 @@
     "kwargs": {}
   },
   "optimizer": {
-    "type": "AdamW",
+    "type": "Adan",
     "kwargs": {
       "lr": 1e-4
     }

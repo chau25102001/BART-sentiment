@@ -39,3 +39,11 @@ class BartSentimentAnalysis(nn.Module):
                                   ]
         logits = self.classifier(sentence_representation)
         return logits
+
+if __name__ == "__main__":
+    model = BartSentimentAnalysis(pretrained="facebook/bart-base")
+    tkn = model.tokenizer
+    a = tkn(['I love dogs', 'i Love cats'], return_tensors='pt')
+    print(a)
+    output = model(a)
+    print(output.shape)
