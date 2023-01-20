@@ -34,11 +34,14 @@ class BartSentimentAnalysis(nn.Module):
             self.config = BartConfig.from_pretrained(pretrained)
             self.bart = BartModel.from_pretrained(pretrained)
             self.tokenizer = BartTokenizer.from_pretrained(pretrained)
+            self.bart.resize_token_embeddings(len(self.tokenizer))
+
         else:
             self.config = BartConfig()
             self.bart = BartModel(config=self.config)
             self.tokenizer = BartTokenizer()
-        
+            self.bart.resize_token_embeddings(len(self.tokenizer))
+
         self.config.num_labels = num_labels
 
         self.classifier = BartClassificationHead(self.config.d_model,
