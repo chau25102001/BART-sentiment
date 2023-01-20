@@ -76,7 +76,7 @@ class Trainer:
             # clip_grad_norm_(self.model.parameters(), 5)
             if isinstance(self.optimizer, SAM):
                 self.optimizer.first_step(zero_grad=True)
-                self.criterion(logits, labels).backward()
+                self.criterion(self.model(inputs), labels).backward()
                 self.optimizer.second_step(zero_grad=True)
             else:
                 self.optimizer.step()
