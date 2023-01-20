@@ -2,10 +2,10 @@ import os
 
 import pandas as pd
 import re
-import nltk
+# import nltk
 
-nltk.download('stopwords')
-from nltk.corpus import stopwords
+# nltk.download('stopwords')
+# from nltk.corpus import stopwords
 
 
 def transform_label(label):
@@ -59,7 +59,8 @@ def spell_correction(text):
 
 
 def clean_pipeline(text):
-    no_link = rm_link(text)
+    lower = text.lower() 
+    no_link = rm_link(lower)
     no_html = rm_html(no_link)
     no_emoji = rm_emoji(no_html)
     no_punct = rm_punct2(no_emoji)
@@ -81,7 +82,7 @@ def clean_dataframe(path):
     dataframe[['clean', 'label']].to_csv(os.path.join(root, name + "_clean.csv"), index=False, header=True)
 
 
-# clean_dataframe('./datasets/train.csv')
-# clean_dataframe('./datasets/test.csv')
-data_cleaned = pd.read_csv("./datasets/train_clean.csv")
-print(data_cleaned['clean'][0])
+clean_dataframe('./datasets/train.csv')
+clean_dataframe('./datasets/test.csv')
+# data_cleaned = pd.read_csv("./datasets/train_clean.csv")
+# print(data_cleaned['clean'][0])
