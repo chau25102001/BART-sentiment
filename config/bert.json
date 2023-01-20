@@ -4,6 +4,7 @@
     "save_dir": "./saved/",
     "epoch": 20,
     "freeze_backbone": false,
+    "max_seq_length": 352,
     "#comment": "pretrained = None -> null",
     "arch": {
       "type": "BertSentimentAnalysis",
