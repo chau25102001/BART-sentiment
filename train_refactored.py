@@ -38,7 +38,10 @@ def train(args):
     test_loader = config.init_obj(torch.utils.data, "train_loader", dataset=test_set, collate_fn=collate_fn)
 
     optimizer = config.init_obj(optim_module, "optimizer", model.parameters())
-    lr_scheduler = optim_module.get_lr_scheduler(optimizer, config, train_loader)
+    if isinstance(optimizer, optim_module.SAM):
+        lr_scheduler = optim_module.get_lr_scheduler(optimizer.base_optimizer, config, train_loader)
+    else:
+        lr_scheduler = optim_module.get_lr_scheduler(optimizer, config, train_loader)
     criterion = config.init_obj(loss_module, "criterion")
 
     trainer = Trainer(model=model,
