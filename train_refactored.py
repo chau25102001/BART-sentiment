@@ -7,18 +7,16 @@ import torch
 import models as model_module
 import datasets as dataset_module
 import models.loss as loss_module
-
+import optimizers as optim_module
 from trainer.trainer import Trainer
 from torch.nn import DataParallel
-from transformers.optimization import get_linear_schedule_with_warmup
-from torch.optim.lr_scheduler import CosineAnnealingLR
 import wandb
 from config_parser import ConfigParser
 from utils.utils import text_collate
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--resume", default=False, action="store_true", help="resume training?")
-parser.add_argument("--config", default="./config/demo_config.json", type=str, help="path to config file")
+parser.add_argument("--config", default="./config/bart.json", type=str, help="path to config file")
 args = parser.parse_args()
 
 
@@ -35,24 +33,12 @@ def train(args):
     train_set = config.init_obj(dataset_module, "train_set")
     test_set = config.init_obj(dataset_module, "test_set")
 
-    collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config.config['max_seq_length'])
+    collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config['max_seq_length'])
     train_loader = config.init_obj(torch.utils.data, "train_loader", dataset=train_set, collate_fn=collate_fn)
     test_loader = config.init_obj(torch.utils.data, "train_loader", dataset=test_set, collate_fn=collate_fn)
 
-    optimizer = config.init_obj(torch.optim, "optimizer", model.parameters())
-
-    # TODO: lr scheduler
-    if config['lr_scheduler'] is not None:
-        if config['lr_scheduler'] == 'cosine':  # cosine decrease lr
-            lr_scheduler = CosineAnnealingLR(optimizer, T_max=config["epoch"] * len(train_loader),
-                                             eta_min=1e-6)
-        elif config[
-            'lr_scheduler'] == 'linear_warm_up':  # warm up from 0 to init lr for 1 epoch, linear decrease for the rest
-            lr_scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=len(train_loader),
-                                                           num_training_steps=len(train_loader) * config['epoch'])
-        else:
-            print(termcolor.colored("Warning: not supported lr scheduler, using default: None", 'red'))
-
+    optimizer = config.init_obj(optim_module, "optimizer", model.parameters())
+    lr_scheduler = optim_module.get_lr_scheduler(optimizer, config, train_loader)
     criterion = config.init_obj(loss_module, "criterion")
 
     trainer = Trainer(model=model,
@@ -63,7 +49,7 @@ def train(args):
                       train_loader=train_loader,
                       test_loader=test_loader,
                       lr_scheduler=lr_scheduler,
-                      logger=False)
+                      logger=True)
     trainer.train(resume=args.resume)
 
 

@@ -72,6 +72,7 @@ class Trainer:
             self.optimizer.zero_grad()
             loss = self.criterion(logits, labels)
             loss.backward()
+            # clip_grad_norm_(self.model.parameters(), 5)
             self.optimizer.step()
             lr = self.optimizer.param_groups[0]['lr']
             if self.lr_scheduler:

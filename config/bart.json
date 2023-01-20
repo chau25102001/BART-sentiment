@@ -1,17 +1,55 @@
 {
-  "train": {
-    "path": "./datasets/imdb_train.csv",
-    "shuffle": true,
-    "batch_size": 64
+  "name": "BART",
+  "n_gpu": 1,
+  "save_dir": "./saved/",
+  "epoch": 10,
+  "max_seq_length": 256,
+  "freeze_backbone": false,
+  "#comment": "pretrained = None -> null",
+  "arch": {
+    "type": "BartSentimentAnalysis",
+    "kwargs": {
+      "pretrained": "facebook/bart-base",
+      "num_labels": 2
+    }
   },
-  "test": {
-    "path": "./datasets/imdb_test.csv",
-    "shuffle": false,
-    "batch_size": 64
+  "train_set": {
+    "type": "IMDBDataset",
+    "kwargs": {
+      "csv_path": "./datasets/train_clean.csv"
+    }
   },
-  "lr": 0.0001,
-  "wd": 0.00001,
-  "save_dir": "./output",
-  "epoch": 20,
-  "scheduler": "linear_warm_up"
+  "test_set": {
+    "type": "IMDBDataset",
+    "kwargs": {
+      "csv_path": "./datasets/test_clean.csv"
+    }
+  },
+  "train_loader": {
+    "type": "DataLoader",
+    "kwargs": {
+      "batch_size": 32,
+      "shuffle": true
+    }
+  },
+  "test_loader": {
+    "type": "DataLoader",
+    "kwargs": {
+      "batch_size": 32,
+      "shuffle": false
+    }
+  },
+  "#comment1": "losses are defined in loss.py file",
+  "criterion": {
+    "type": "cross_entropy",
+    "kwargs": {}
+  },
+  "optimizer": {
+    "type": "AdamW",
+    "kwargs": {
+      "lr": 1e-4
+    }
+  },
+  "lr_scheduler": "constant_warm_up"
 }
+  
