@@ -45,7 +45,7 @@ def train(args):
     if config['lr_scheduler'] is not None:
         if config['lr_scheduler'] == 'cosine':  # cosine decrease lr
             lr_scheduler = CosineAnnealingLR(optimizer, T_max=config["epoch"] * len(train_loader),
-                                             eta_min=1e-6)
+                                             eta_min=1e-5)
         elif config[
             'lr_scheduler'] == 'linear_warm_up':  # warm up from 0 to init lr for 1 epoch, linear decrease for the rest
             lr_scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=len(train_loader),
@@ -63,7 +63,7 @@ def train(args):
                       train_loader=train_loader,
                       test_loader=test_loader,
                       lr_scheduler=lr_scheduler,
-                      logger=False)
+                      logger=True)
     trainer.train(resume=args.resume)
 
 
