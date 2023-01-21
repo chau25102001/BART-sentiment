@@ -57,7 +57,7 @@ class JsonTokenizer:
 
     def __init__(self, tokenization_path):
         with open(tokenization_path, 'r') as f:
-            tokenization = json.load(f)
+            tokenization = json.loads(f.read())
         self.vocab_size = tokenization['vocab_size']
         self.vocabulary = tokenization['vocabulary']
 
