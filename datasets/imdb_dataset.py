@@ -38,6 +38,7 @@ class NaiveTokenizedDataset(IMDBDataset):
     def __init__(self, csv_path, vocabulary_path, max_seq_length):
         super(NaiveTokenizedDataset, self).__init__(csv_path)
         with open(vocabulary_path, 'r') as f:
+            print(vocabulary_path)
             tokenization = json.load(f)
         self.vocab_size = tokenization['vocab_size']
         self.vocabulary = tokenization['vocabulary']
