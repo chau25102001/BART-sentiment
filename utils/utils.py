@@ -10,6 +10,7 @@ from pathlib import Path
 import torch
 from transformers import BartTokenizer
 from prettytable import PrettyTable
+from string import punctuation
 
 
 class Timer(object):
@@ -114,3 +115,15 @@ def count_parameters(model):
     # print(table)
     # print(f"Total Trainable Params: {total_params}")
     return total_params, table
+
+
+def split_punctuation(doc):
+    doc = doc.replace("\"", " \" ")
+    for punc in punctuation:
+        if punc in ('"', '\\'):
+            pass
+        else:
+            doc = doc.replace(punc, f" {punc} ")
+    for letter in ('re', 've', 'll', 's', 'm', 'd', 't'):
+        doc = doc.replace(f"' {letter} ", f" '{letter} ")
+    return doc

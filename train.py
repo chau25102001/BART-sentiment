@@ -2,7 +2,7 @@ import argparse
 
 import termcolor
 import torch
-from datasets.imbd_dataset import IMDBDataset, text_collate
+from datasets.imdb_dataset import IMDBDataset, text_collate
 from models.bart_sentiment import BartSentimentAnalysis
 from transformers import BartConfig
 from trainer.trainer import Trainer

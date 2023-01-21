@@ -25,7 +25,12 @@ def train(args):
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = config.init_obj(model_module, "arch")
-    tokenizer = model.tokenizer
+    if config['arch']['type'] == 'LSTMSentimentAnalysis':
+        tokenizer = None
+        collate_fn = None
+    else:
+        tokenizer = model.tokenizer
+        collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config['max_seq_length'])
     model = DataParallel(model).to(device)
 
     print(f"Model: {config['name']}, num params: {sum(p.numel() for p in model.parameters())}")
@@ -33,9 +38,8 @@ def train(args):
     train_set = config.init_obj(dataset_module, "train_set")
     test_set = config.init_obj(dataset_module, "test_set")
 
-    collate_fn = lambda batch: text_collate(batch, tokenizer, device, max_seq_length=config['max_seq_length'])
     train_loader = config.init_obj(torch.utils.data, "train_loader", dataset=train_set, collate_fn=collate_fn)
-    test_loader = config.init_obj(torch.utils.data, "train_loader", dataset=test_set, collate_fn=collate_fn)
+    test_loader = config.init_obj(torch.utils.data, "test_loader", dataset=test_set, collate_fn=collate_fn)
 
     optimizer = config.init_obj(optim_module, "optimizer", model.parameters())
     lr_scheduler = optim_module.get_lr_scheduler(optimizer, config, train_loader)

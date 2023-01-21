@@ -172,3 +172,4 @@ checkpoints
 imgs
 *.pt
 *.idea
+/wandb/

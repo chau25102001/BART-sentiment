@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from utils.utils import count_parameters
+import json
+from utils.utils import count_parameters, split_punctuation
 
 
 class LSTMSentimentAnalysis(nn.Module):
@@ -10,7 +11,7 @@ class LSTMSentimentAnalysis(nn.Module):
         """
         A biLSTM model for Sentiment Analysis. The input will be passed through a LSTM to make a hidden feature. Then
         it will be passed through a Linear classifier.
-        :param vocab_size: The vocabulary size.
+        :param vocab_size: The size of the vocabulary.
         :param embedding_size: The embedding size of each word.
         :param hidden_size: The size of the LSTM hidden state.
         :param output_size: The size of the output tensor (the number of sentiment classes).
@@ -50,6 +51,34 @@ class LSTMSentimentAnalysis(nn.Module):
         out = self.classifier(feature)
         out = self.softmax(out)
         return out
+
+
+class JsonTokenizer:
+
+    def __init__(self, tokenization_path):
+        tokenization = json.load(tokenization_path)
+        self.vocab_size = tokenization['vocab_size']
+        self.vocabulary = tokenization['vocabulary']
+
+    def tokenize(self, docs):
+        if isinstance(docs, str):
+            return self._tokenize_doc(docs)
+        elif isinstance(docs, tuple) or isinstance(docs, list):
+            tokenizations = []
+            for doc in docs:
+                tokenizations.append(self._tokenize_doc(doc))
+            return torch.tensor(tokenizations, dtype=torch.long)
+
+    def _tokenize_doc(self, doc):
+        doc = split_punctuation(doc)
+        doc = doc.split()
+        tokens = []
+        for word in doc:
+            if word in self.vocabulary.keys():
+                tokens.append(self.vocabulary[doc])
+            else:
+                tokens.append(self.vocabulary['<unk>'])
+        return torch.tensor(tokens, dtype=torch.long)
 
 
 if __name__ == '__main__':
