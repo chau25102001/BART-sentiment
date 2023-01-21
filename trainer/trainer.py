@@ -98,7 +98,7 @@ class Trainer:
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
             # to('cuda') is handled in text_collate function of dataloader
-
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
             with torch.no_grad():
                 logits = self.model(inputs)
                 loss = self.criterion(logits, labels)
