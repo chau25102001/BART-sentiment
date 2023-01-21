@@ -31,4 +31,3 @@ def create_vocabulary(csv_path, save_folder='./datasets'):
 if __name__ == '__main__':
     # print(punctuation)
     create_vocabulary('./datasets/train_clean.csv')
-
