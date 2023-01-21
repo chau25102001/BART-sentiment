@@ -10,8 +10,8 @@
       "type": "LSTMSentimentAnalysis",
       "kwargs": {
         "vocab_size": 74455,
-        "embedding_size": 1024,
-        "hidden_size": 512,
+        "embedding_size": 512,
+        "hidden_size": 256,
         "output_size": 2,
         "num_layers": 3,
         "dropout": 0.2,
@@ -58,7 +58,7 @@
     "optimizer": {
       "type": "AdamW",
       "kwargs": {
-        "lr": 1e-4
+        "lr": 5e-3
       }
     },
     "lr_scheduler": "linear_warm_up"
