@@ -56,7 +56,8 @@ class LSTMSentimentAnalysis(nn.Module):
 class JsonTokenizer:
 
     def __init__(self, tokenization_path):
-        tokenization = json.load(tokenization_path)
+        with open(tokenization_path, 'w') as f:
+            tokenization = json.load(f)
         self.vocab_size = tokenization['vocab_size']
         self.vocabulary = tokenization['vocabulary']
 
