@@ -13,8 +13,8 @@
         "embedding_size": 512,
         "hidden_size": 256,
         "output_size": 2,
-        "num_layers": 3,
-        "dropout": 0.2,
+        "num_layers": 4,
+        "dropout": 0.1,
         "bi": true,
         "last_state": true,
         "padding_idx": 0
@@ -58,7 +58,7 @@
     "optimizer": {
       "type": "AdamW",
       "kwargs": {
-        "lr": 5e-3
+        "lr": 5e-4
       }
     },
     "lr_scheduler": "linear_warm_up"
