@@ -49,7 +49,7 @@ class LSTMSentimentAnalysis(nn.Module):
         else:
             feature = torch.mean(lstm_out, dim=-2)
         out = self.classifier(feature)
-        out = self.softmax(out)
+        # out = self.softmax(out)
         return out
 
 
