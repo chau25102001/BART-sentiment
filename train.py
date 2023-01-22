@@ -1,8 +1,8 @@
-# import argparse
-#
-# import termcolor
-# import torch
-# from datasets.imdb_dataset import IMDBDataset
+import argparse
+
+import termcolor
+import torch
+from datasets.imdb_dataset import IMDBDataset, text_collate
 from models.bart_sentiment import BartSentimentAnalysis
 # from transformers import BartConfig
 # from trainer.trainer import Trainer

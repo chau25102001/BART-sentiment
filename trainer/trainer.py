@@ -29,7 +29,7 @@ def accuracy(predict, label, num_classes=2):
 class Trainer:
     def __init__(self, model, config, criterion, optimizer, device, train_loader, test_loader,
                  lr_scheduler=None, logger=False):
-        self.model = model
+        self.model = model.to(device)
         self.criterion = criterion
         self.config = config
         self.optimizer = optimizer
@@ -69,6 +69,7 @@ class Trainer:
 
         for _, (inputs, labels) in pbar:
             # to('cuda') is handled in text_collate function of dataloader
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
             logits = self.model(inputs)
             self.optimizer.zero_grad()
             loss = self.criterion(logits, labels)
@@ -103,7 +104,7 @@ class Trainer:
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
             # to('cuda') is handled in text_collate function of dataloader
-
+            inputs, labels = inputs.to(self.device), labels.to(self.device)
             with torch.no_grad():
                 logits = self.model(inputs)
                 loss = self.criterion(logits, labels)

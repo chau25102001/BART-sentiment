@@ -9,6 +9,8 @@ import json
 from pathlib import Path
 import torch
 from transformers import BartTokenizer
+from prettytable import PrettyTable
+from string import punctuation
 
 
 class Timer(object):
@@ -98,5 +100,30 @@ def text_collate(batch, tokenizer: BartTokenizer, device, max_seq_length=256):
         texts.append(sample[0])
         targets.append(sample[1])
     output_text = tokenizer(texts, padding=True, return_tensors='pt', truncation=True, max_length=max_seq_length)
-
     return output_text.to(device), torch.tensor(targets, dtype=torch.long).to(device)
+
+
+def count_parameters(model):
+    table = PrettyTable(["Modules", "Parameters"])
+    total_params = 0
+    for name, parameter in model.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        params = parameter.numel()
+        table.add_row([name, params])
+        total_params += params
+    # print(table)
+    # print(f"Total Trainable Params: {total_params}")
+    return total_params, table
+
+
+def split_punctuation(doc):
+    doc = doc.replace("\"", " \" ")
+    for punc in punctuation:
+        if punc in ('"', '\\'):
+            pass
+        else:
+            doc = doc.replace(punc, f" {punc} ")
+    for letter in ('re', 've', 'll', 's', 'm', 'd', 't'):
+        doc = doc.replace(f"' {letter} ", f" '{letter} ")
+    return doc

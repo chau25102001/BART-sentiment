@@ -172,3 +172,5 @@ checkpoints
 imgs
 *.pt
 *.idea
+/wandb/
+/draft.py
