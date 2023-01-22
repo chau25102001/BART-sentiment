@@ -45,9 +45,10 @@
     "kwargs": {}
   },
   "optimizer": {
-    "type": "AdamW",
+    "type": "SAM",
     "kwargs": {
-      "lr": 1e-4
+      "lr": 1e-4,
+      "momentum": 0.9
     }
   },
   "lr_scheduler": "constant_warm_up"

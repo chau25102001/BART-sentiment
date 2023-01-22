@@ -1,8 +1,9 @@
-from pathlib import Path 
+from pathlib import Path
 import json
 from collections import OrderedDict
 from utils.utils import read_json
 import os
+
 
 class ConfigParser:
     def __init__(self, args):

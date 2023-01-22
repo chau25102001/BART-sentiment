@@ -6,6 +6,7 @@ from utils.utils import AverageMeter
 from termcolor import colored
 import wandb
 import numpy as np
+from optimizers import SAM
 
 
 def accuracy(predict, label, num_classes=2):
@@ -74,7 +75,12 @@ class Trainer:
             loss = self.criterion(logits, labels)
             loss.backward()
             # clip_grad_norm_(self.model.parameters(), 5)
-            self.optimizer.step()
+            if isinstance(self.optimizer, SAM):
+                self.optimizer.first_step(zero_grad=True)
+                self.criterion(self.model(inputs), labels).backward()
+                self.optimizer.second_step(zero_grad=True)
+            else:
+                self.optimizer.step()
             lr = self.optimizer.param_groups[0]['lr']
             if self.lr_scheduler:
                 self.lr_scheduler.step()
