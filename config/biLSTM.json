@@ -11,9 +11,9 @@
       "kwargs": {
         "vocab_size": 74455,
         "embedding_size": 1024,
-        "hidden_size": 256,
+        "hidden_size": 512,
         "output_size": 2,
-        "num_layers": 5,
+        "num_layers": 2,
         "dropout": 0.2,
         "bi": true,
         "last_state": true,
