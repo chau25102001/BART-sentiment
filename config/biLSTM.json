@@ -4,16 +4,16 @@
     "save_dir": "./saved/",
     "epoch": 20,
     "freeze_backbone": false,
-    "max_seq_length": 128,
+    "max_seq_length": 64,
     "#comment": "pretrained = None -> null",
     "arch": {
       "type": "LSTMSentimentAnalysis",
       "kwargs": {
         "vocab_size": 74455,
-        "embedding_size": 512,
+        "embedding_size": 1024,
         "hidden_size": 256,
         "output_size": 2,
-        "num_layers": 4,
+        "num_layers": 5,
         "dropout": 0.1,
         "bi": true,
         "last_state": true,
@@ -56,9 +56,10 @@
       "kwargs": {}
     },
     "optimizer": {
-      "type": "AdamW",
+      "type": "SAM",
       "kwargs": {
-        "lr": 5e-4
+        "lr": 1e-4,
+        "momentum": 0.9
       }
     },
     "lr_scheduler": "linear_warm_up"
