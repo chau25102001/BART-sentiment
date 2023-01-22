@@ -14,7 +14,7 @@
         "hidden_size": 256,
         "output_size": 2,
         "num_layers": 5,
-        "dropout": 0.1,
+        "dropout": 0.2,
         "bi": true,
         "last_state": true,
         "padding_idx": 0
@@ -56,10 +56,9 @@
       "kwargs": {}
     },
     "optimizer": {
-      "type": "SAM",
+      "type": "AdamW",
       "kwargs": {
-        "lr": 1e-4,
-        "momentum": 0.9
+        "lr": 5e-4
       }
     },
     "lr_scheduler": "linear_warm_up"
