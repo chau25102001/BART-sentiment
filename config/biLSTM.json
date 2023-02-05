@@ -28,7 +28,7 @@
         "csv_path": "./datasets/train_clean.csv",
         "vocabulary_path": "./datasets/train_clean_vocabulary.json",
         "max_seq_length": 128,
-        "max_word_length": 45
+        "max_word_length": 10
       }
     },
     "test_set": {
@@ -37,7 +37,7 @@
         "csv_path": "./datasets/test_clean.csv",
         "vocabulary_path": "./datasets/train_clean_vocabulary.json",
         "max_seq_length": 128,
-        "max_word_length": 45
+        "max_word_length": 10
       }
     },
     "train_loader": {

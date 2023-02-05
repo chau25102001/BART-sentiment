@@ -92,11 +92,12 @@ class CharLevelEmbedding(nn.Module):
         if len(x.shape) == 2:
             x = x.unsqueeze(0)
         out = []
-        for word_id in range(x.shape[-2]):
-            word = x[:, word_id, :].clone()
-            print(word.shape)
-            input_embeddings = self.embedding_layer(word)
-            print(input_embeddings.shape)
+        # for word_id in range(x.shape[-2]):
+        #     word = x[:, word_id, :]
+        #     input_embeddings = self.embedding_layer(word)
+        initial_embedding = self.embedding_layer(x)
+        for word_id in range(initial_embedding.shape[-3]):
+            input_embeddings = initial_embedding[:, word_id, :, :]
             lstm_out, lstm_hidden = self.lstm(input_embeddings)
             if self.bi:
                 # Get the last state of the forward output and the "first" state of the backward output
@@ -150,9 +151,9 @@ if __name__ == '__main__':
     # forward output: [:, :, :hidden_size]
     # backward output: [:, :, hidden_size:]
     model = LSTMSentimentAnalysis(wl_vocab_size=10,
-                                  cl_vocab_size=10,
+                                  cl_vocab_size=102,
                                   wl_embedding_size=128,
-                                  cl_embedding_size=100,
+                                  cl_embedding_size=128,
                                   hidden_size=256,
                                   output_size=2
                                   )
