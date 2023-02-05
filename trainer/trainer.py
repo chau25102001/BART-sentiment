@@ -72,6 +72,7 @@ class Trainer:
             if isinstance(inputs, list):
                 words, chars = inputs
                 words, chars = words.to(self.device), chars.to(self.device)
+                labels = labels.to(self.device)
                 logits = self.model(words, chars)
             else:
                 # to('cuda') is handled in text_collate function of dataloader
@@ -112,6 +113,7 @@ class Trainer:
             if isinstance(inputs, list):
                 words, chars = inputs
                 words, chars = words.to(self.device), chars.to(self.device)
+                labels = labels.to(self.device)
                 inputs = (words, chars)
             else:
                 # to('cuda') is handled in text_collate function of dataloader
