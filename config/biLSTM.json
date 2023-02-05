@@ -9,8 +9,10 @@
     "arch": {
       "type": "LSTMSentimentAnalysis",
       "kwargs": {
-        "vocab_size": 74455,
-        "embedding_size": 512,
+        "wl_vocab_size": 74455,
+        "cl_vocab_size": 102,
+        "wl_embedding_size": 512,
+        "cl_embedding_size": 128,
         "hidden_size": 256,
         "output_size": 2,
         "num_layers": 2,
@@ -25,7 +27,8 @@
       "kwargs": {
         "csv_path": "./datasets/train_clean.csv",
         "vocabulary_path": "./datasets/train_clean_vocabulary.json",
-        "max_seq_length": 128
+        "max_seq_length": 128,
+        "max_word_length": 45
       }
     },
     "test_set": {
@@ -33,7 +36,8 @@
       "kwargs": {
         "csv_path": "./datasets/test_clean.csv",
         "vocabulary_path": "./datasets/train_clean_vocabulary.json",
-        "max_seq_length": 128
+        "max_seq_length": 128,
+        "max_word_length": 45
       }
     },
     "train_loader": {
