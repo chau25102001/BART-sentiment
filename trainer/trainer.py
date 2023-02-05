@@ -7,6 +7,7 @@ from termcolor import colored
 import wandb
 import numpy as np
 from optimizers import SAM
+from models.lstm_sentiment import LSTMSentimentAnalysis
 
 
 def accuracy(predict, label, num_classes=2):
@@ -68,9 +69,15 @@ class Trainer:
         acc_meter = AverageMeter()
 
         for _, (inputs, labels) in pbar:
-            # to('cuda') is handled in text_collate function of dataloader
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
-            logits = self.model(inputs)
+            if isinstance(inputs, list):
+                words, chars = inputs
+                words, chars = words.to(self.device), chars.to(self.device)
+                labels = labels.to(self.device)
+                logits = self.model(words, chars)
+            else:
+                # to('cuda') is handled in text_collate function of dataloader
+                inputs, labels = inputs.to(self.device), labels.to(self.device)
+                logits = self.model(inputs)
             self.optimizer.zero_grad()
             loss = self.criterion(logits, labels)
             loss.backward()
@@ -103,10 +110,19 @@ class Trainer:
         loss_meter = AverageMeter()
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
-            # to('cuda') is handled in text_collate function of dataloader
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            if isinstance(inputs, list):
+                words, chars = inputs
+                words, chars = words.to(self.device), chars.to(self.device)
+                labels = labels.to(self.device)
+                inputs = [words, chars]
+            else:
+                # to('cuda') is handled in text_collate function of dataloader
+                inputs, labels = inputs.to(self.device), labels.to(self.device)
             with torch.no_grad():
-                logits = self.model(inputs)
+                if isinstance(inputs, list):
+                    logits = self.model(*inputs)
+                else:
+                    logits = self.model(inputs)
                 loss = self.criterion(logits, labels)
                 pred = torch.argmax(logits, dim=1)
                 acc = accuracy(pred, labels)
@@ -127,25 +143,26 @@ class Trainer:
         print("------> load checkpoint")
 
     def train(self, resume=False):
-        if resume:
-            self._load_model()
-        for epoch in range(self.current_epoch, self.config['epoch']):
-            train_result = self._train_epoch(epoch)
-            train_loss = train_result['loss']
-            train_acc = train_result['acc']
+        with torch.autograd.set_detect_anomaly(True):
+            if resume:
+                self._load_model()
+            for epoch in range(self.current_epoch, self.config['epoch']):
+                train_result = self._train_epoch(epoch)
+                train_loss = train_result['loss']
+                train_acc = train_result['acc']
 
-            test_result = self._eval_epoch(epoch)
-            test_loss = test_result['loss']
-            test_acc = test_result['acc']
-            if self.logger:
-                wandb.log({'train/loss': train_loss})
-                wandb.log({'train/acc': train_acc})
-                wandb.log({'test/loss': test_loss})
-                wandb.log({'test/acc': test_acc})
-            test_result['state_dict'] = self.model.module.state_dict() if self.model.module else self.model.state_dict()
-            test_result['optimizer'] = self.optimizer.state_dict()
-            test_result['lr_scheduler'] = self.lr_scheduler.state_dict() if self.lr_scheduler else None
-            test_result['epoch'] = epoch
-            if test_acc > self.best_acc:
-                torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_best.pt'))
-            torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_last.pt'))
+                test_result = self._eval_epoch(epoch)
+                test_loss = test_result['loss']
+                test_acc = test_result['acc']
+                if self.logger:
+                    wandb.log({'train/loss': train_loss})
+                    wandb.log({'train/acc': train_acc})
+                    wandb.log({'test/loss': test_loss})
+                    wandb.log({'test/acc': test_acc})
+                test_result['state_dict'] = self.model.module.state_dict() if self.model.module else self.model.state_dict()
+                test_result['optimizer'] = self.optimizer.state_dict()
+                test_result['lr_scheduler'] = self.lr_scheduler.state_dict() if self.lr_scheduler else None
+                test_result['epoch'] = epoch
+                if test_acc > self.best_acc:
+                    torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_best.pt'))
+                torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_last.pt'))
