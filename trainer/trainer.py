@@ -69,12 +69,11 @@ class Trainer:
         acc_meter = AverageMeter()
 
         for _, (inputs, labels) in pbar:
-            if isinstance(self.model, LSTMSentimentAnalysis):
+            if isinstance(inputs, list):
                 words, chars = inputs
                 words, chars = words.to(self.device), chars.to(self.device)
                 logits = self.model(words, chars)
             else:
-                print(type(self.model))
                 # to('cuda') is handled in text_collate function of dataloader
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 logits = self.model(inputs)
@@ -110,7 +109,7 @@ class Trainer:
         loss_meter = AverageMeter()
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
-            if isinstance(self.model, LSTMSentimentAnalysis):
+            if isinstance(inputs, list):
                 words, chars = inputs
                 words, chars = words.to(self.device), chars.to(self.device)
                 inputs = (words, chars)
