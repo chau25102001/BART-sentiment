@@ -93,7 +93,7 @@ class CharLevelEmbedding(nn.Module):
             x = x.unsqueeze(0)
         out = []
         for word_id in range(x.shape[-2]):
-            word = x[:, word_id, :]
+            word = x[:, word_id, :].clone()
             input_embeddings = self.embedding_layer(word)
             lstm_out, lstm_hidden = self.lstm(input_embeddings)
             if self.bi:
