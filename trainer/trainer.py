@@ -114,7 +114,7 @@ class Trainer:
                 words, chars = inputs
                 words, chars = words.to(self.device), chars.to(self.device)
                 labels = labels.to(self.device)
-                inputs = (words, chars)
+                inputs = [words, chars]
             else:
                 # to('cuda') is handled in text_collate function of dataloader
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
