@@ -75,7 +75,7 @@ class NaiveTokenizedDataset(IMDBDataset):
         while len(tokens) < self.max_seq_length:
             tokens.append(self.vocabulary['<pad>'])
         return (
-                torch.tensor(tokens, dtype=torch.int),
-                torch.tensor(characters, dtype=torch.int),
+                (torch.tensor(tokens, dtype=torch.int),
+                 torch.tensor(characters, dtype=torch.int)),
                 torch.tensor(label, dtype=torch.long)
                 )

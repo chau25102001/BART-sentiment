@@ -7,6 +7,7 @@ from termcolor import colored
 import wandb
 import numpy as np
 from optimizers import SAM
+from models.lstm_sentiment import LSTMSentimentAnalysis
 
 
 def accuracy(predict, label, num_classes=2):
@@ -68,9 +69,14 @@ class Trainer:
         acc_meter = AverageMeter()
 
         for _, (inputs, labels) in pbar:
-            # to('cuda') is handled in text_collate function of dataloader
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
-            logits = self.model(inputs)
+            if isinstance(self.model, LSTMSentimentAnalysis):
+                words, chars = inputs
+                words, chars = words.to(self.device), chars.to(self.device)
+                logits = self.model(words, chars)
+            else:
+                # to('cuda') is handled in text_collate function of dataloader
+                inputs, labels = inputs.to(self.device), labels.to(self.device)
+                logits = self.model(inputs)
             self.optimizer.zero_grad()
             loss = self.criterion(logits, labels)
             loss.backward()
@@ -103,10 +109,18 @@ class Trainer:
         loss_meter = AverageMeter()
         acc_meter = AverageMeter()
         for i, (inputs, labels) in pbar:
-            # to('cuda') is handled in text_collate function of dataloader
-            inputs, labels = inputs.to(self.device), labels.to(self.device)
+            if isinstance(self.model, LSTMSentimentAnalysis):
+                words, chars = inputs
+                words, chars = words.to(self.device), chars.to(self.device)
+                inputs = (words, chars)
+            else:
+                # to('cuda') is handled in text_collate function of dataloader
+                inputs, labels = inputs.to(self.device), labels.to(self.device)
             with torch.no_grad():
-                logits = self.model(inputs)
+                if isinstance(self.model, LSTMSentimentAnalysis):
+                    logits = self.model(*inputs)
+                else:
+                    logits = self.model(inputs)
                 loss = self.criterion(logits, labels)
                 pred = torch.argmax(logits, dim=1)
                 acc = accuracy(pred, labels)
