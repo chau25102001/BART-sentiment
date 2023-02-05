@@ -143,25 +143,26 @@ class Trainer:
         print("------> load checkpoint")
 
     def train(self, resume=False):
-        if resume:
-            self._load_model()
-        for epoch in range(self.current_epoch, self.config['epoch']):
-            train_result = self._train_epoch(epoch)
-            train_loss = train_result['loss']
-            train_acc = train_result['acc']
+        with torch.autograd.set_detect_anomaly(True):
+            if resume:
+                self._load_model()
+            for epoch in range(self.current_epoch, self.config['epoch']):
+                train_result = self._train_epoch(epoch)
+                train_loss = train_result['loss']
+                train_acc = train_result['acc']
 
-            test_result = self._eval_epoch(epoch)
-            test_loss = test_result['loss']
-            test_acc = test_result['acc']
-            if self.logger:
-                wandb.log({'train/loss': train_loss})
-                wandb.log({'train/acc': train_acc})
-                wandb.log({'test/loss': test_loss})
-                wandb.log({'test/acc': test_acc})
-            test_result['state_dict'] = self.model.module.state_dict() if self.model.module else self.model.state_dict()
-            test_result['optimizer'] = self.optimizer.state_dict()
-            test_result['lr_scheduler'] = self.lr_scheduler.state_dict() if self.lr_scheduler else None
-            test_result['epoch'] = epoch
-            if test_acc > self.best_acc:
-                torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_best.pt'))
-            torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_last.pt'))
+                test_result = self._eval_epoch(epoch)
+                test_loss = test_result['loss']
+                test_acc = test_result['acc']
+                if self.logger:
+                    wandb.log({'train/loss': train_loss})
+                    wandb.log({'train/acc': train_acc})
+                    wandb.log({'test/loss': test_loss})
+                    wandb.log({'test/acc': test_acc})
+                test_result['state_dict'] = self.model.module.state_dict() if self.model.module else self.model.state_dict()
+                test_result['optimizer'] = self.optimizer.state_dict()
+                test_result['lr_scheduler'] = self.lr_scheduler.state_dict() if self.lr_scheduler else None
+                test_result['epoch'] = epoch
+                if test_acc > self.best_acc:
+                    torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_best.pt'))
+                torch.save(test_result, os.path.join(self.config['save_dir'], 'checkpoint_last.pt'))

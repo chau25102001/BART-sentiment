@@ -58,8 +58,8 @@ class LSTMSentimentAnalysis(nn.Module):
             if self.bi:
                 # Get the last state of the forward output and the "first" state of the backward output
                 embedding_dim = lstm_out.shape[2] // 2
-                forward_feature = lstm_out[:, -1, :embedding_dim].clone()
-                backward_feature = lstm_out[:, 0, embedding_dim:].clone()
+                forward_feature = lstm_out[:, -1, :embedding_dim]
+                backward_feature = lstm_out[:, 0, embedding_dim:]
                 feature = torch.cat([forward_feature, backward_feature], dim=-1)
             else:
                 feature = lstm_out[:, -1, :]
@@ -99,8 +99,8 @@ class CharLevelEmbedding(nn.Module):
             if self.bi:
                 # Get the last state of the forward output and the "first" state of the backward output
                 embedding_dim = lstm_out.shape[2] // 2
-                forward_feature = lstm_out[:, -1, :embedding_dim].clone()
-                backward_feature = lstm_out[:, 0, embedding_dim:].clone()
+                forward_feature = lstm_out[:, -1, :embedding_dim]
+                backward_feature = lstm_out[:, 0, embedding_dim:]
                 feature = torch.cat([forward_feature, backward_feature], dim=-1)
                 word_embedding = self.linear(feature)
             else:
