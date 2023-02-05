@@ -74,6 +74,7 @@ class Trainer:
                 words, chars = words.to(self.device), chars.to(self.device)
                 logits = self.model(words, chars)
             else:
+                print(type(self.model))
                 # to('cuda') is handled in text_collate function of dataloader
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
                 logits = self.model(inputs)
