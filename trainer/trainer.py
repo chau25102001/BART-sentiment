@@ -119,7 +119,7 @@ class Trainer:
                 # to('cuda') is handled in text_collate function of dataloader
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
             with torch.no_grad():
-                if isinstance(self.model, LSTMSentimentAnalysis):
+                if isinstance(inputs, list):
                     logits = self.model(*inputs)
                 else:
                     logits = self.model(inputs)
