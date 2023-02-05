@@ -94,7 +94,9 @@ class CharLevelEmbedding(nn.Module):
         out = []
         for word_id in range(x.shape[-2]):
             word = x[:, word_id, :].clone()
+            print(word.shape)
             input_embeddings = self.embedding_layer(word)
+            print(input_embeddings.shape)
             lstm_out, lstm_hidden = self.lstm(input_embeddings)
             if self.bi:
                 # Get the last state of the forward output and the "first" state of the backward output
