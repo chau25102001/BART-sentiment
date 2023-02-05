@@ -33,7 +33,7 @@ class LSTMSentimentAnalysis(nn.Module):
                                          max_norm=1)
         self.cl_embedding = CharLevelEmbedding(vocab_size=cl_vocab_size,
                                                embedding_dim=cl_embedding_size)
-        self.lstm = nn.LSTM(input_size=wl_embedding_size,
+        self.lstm = nn.LSTM(input_size=wl_embedding_size + cl_embedding_size,
                             hidden_size=hidden_size,
                             num_layers=num_layers,
                             dropout=dropout,
@@ -147,25 +147,27 @@ if __name__ == '__main__':
     # biLSTM:
     # forward output: [:, :, :hidden_size]
     # backward output: [:, :, hidden_size:]
-    # model = LSTMSentimentAnalysis(vocab_size=10,
-    #                               wl_embedding_size=128,
-    #                               cl_embedding_size=100,
-    #                               hidden_size=256,
-    #                               output_size=2
-    #                               )
-    model = CharLevelEmbedding(vocab_size=10,
-                               embedding_dim=100,
-                               bi=True
-                               )
+    model = LSTMSentimentAnalysis(wl_vocab_size=10,
+                                  cl_vocab_size=10,
+                                  wl_embedding_size=128,
+                                  cl_embedding_size=100,
+                                  hidden_size=256,
+                                  output_size=2
+                                  )
+    # model = CharLevelEmbedding(vocab_size=10,
+    #                            embedding_dim=100,
+    #                            bi=True
+    #                            )
     total_params, table = count_parameters(model)
     print(table)
     print(f"Total Trainable Params: {total_params}")
-    test = torch.tensor([
-        [[1, 2, 4, 5, 6], [0, 2, 5, 6, 9], [0, 2, 5, 6, 9]],
-        [[1, 2, 4, 5, 6], [0, 2, 5, 6, 9], [0, 2, 5, 6, 9]],
-        [[1, 2, 4, 5, 6], [0, 2, 5, 6, 9], [0, 2, 5, 6, 9]],
-        [[1, 2, 4, 5, 6], [0, 2, 5, 6, 9], [0, 2, 5, 6, 9]]
+    words = torch.tensor([[1, 2, 4, 5, 6], [0, 2, 5, 6, 9], [0, 2, 5, 6, 9], [1, 2, 4, 5, 6]])
+    chars = torch.tensor([
+        [[1, 2, 4], [0, 2, 5], [0, 2, 5], [0, 2, 5], [0, 2, 5]],
+        [[1, 2, 4], [0, 2, 5], [0, 2, 5], [0, 2, 5], [0, 2, 5]],
+        [[1, 2, 4], [0, 2, 5], [0, 2, 5], [0, 2, 5], [0, 2, 5]],
+        [[1, 2, 4], [0, 2, 5], [0, 2, 5], [0, 2, 5], [0, 2, 5]]
     ])
-    output = model(test)
+    output = model(words, chars)
     print(torch.exp(output))
     print(output.shape)
