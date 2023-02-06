@@ -1,0 +1,69 @@
+{
+    "name": "biLSTM",
+    "n_gpu": 1,
+    "save_dir": "./saved/",
+    "epoch": 20,
+    "freeze_backbone": false,
+    "max_seq_length": 64,
+    "#comment": "pretrained = None -> null",
+    "arch": {
+      "type": "LSTMSentimentAnalysis",
+      "kwargs": {
+        "wl_vocab_size": 74455,
+        "cl_vocab_size": 102,
+        "wl_embedding_size": 512,
+        "cl_embedding_size": 128,
+        "hidden_size": 256,
+        "output_size": 2,
+        "num_layers": 2,
+        "dropout": 0.1,
+        "bi": true,
+        "last_state": false,
+        "padding_idx": 0
+      }
+    },
+    "train_set": {
+      "type": "NaiveTokenizedDataset",
+      "kwargs": {
+        "csv_path": "./datasets/train_clean.csv",
+        "vocabulary_path": "./datasets/train_clean_vocabulary.json",
+        "max_seq_length": 128,
+        "max_word_length": 10
+      }
+    },
+    "test_set": {
+      "type": "NaiveTokenizedDataset",
+      "kwargs": {
+        "csv_path": "./datasets/test_clean.csv",
+        "vocabulary_path": "./datasets/train_clean_vocabulary.json",
+        "max_seq_length": 128,
+        "max_word_length": 10
+      }
+    },
+    "train_loader": {
+      "type": "DataLoader",
+      "kwargs": {
+        "batch_size": 64,
+        "shuffle": true
+      }
+    },
+    "test_loader": {
+      "type": "DataLoader",
+      "kwargs": {
+        "batch_size": 64,
+        "shuffle": false
+      }
+    },
+    "#comment1": "losses are defined in loss.py file",
+    "criterion": {
+      "type": "cross_entropy",
+      "kwargs": {}
+    },
+    "optimizer": {
+      "type": "AdamW",
+      "kwargs": {
+        "lr": 1e-4
+      }
+    },
+    "lr_scheduler": "linear_warm_up"
+  }
