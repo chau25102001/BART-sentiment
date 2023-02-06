@@ -2,7 +2,7 @@
     "name": "biLSTM",
     "n_gpu": 1,
     "save_dir": "./saved/",
-    "epoch": 20,
+    "epoch": 10,
     "freeze_backbone": false,
     "max_seq_length": 64,
     "#comment": "pretrained = None -> null",
