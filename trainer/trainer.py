@@ -73,7 +73,8 @@ class Trainer:
                 words, chars = inputs
                 words, chars = words.to(self.device), chars.to(self.device)
                 labels = labels.to(self.device)
-                logits = self.model(words, chars)
+                inputs = [words, chars]
+                logits = self.model(*inputs)
             else:
                 # to('cuda') is handled in text_collate function of dataloader
                 inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -84,7 +85,10 @@ class Trainer:
             # clip_grad_norm_(self.model.parameters(), 5)
             if isinstance(self.optimizer, SAM):
                 self.optimizer.first_step(zero_grad=True)
-                self.criterion(self.model(inputs), labels).backward()
+                if isinstance(inputs, list):
+                    self.criterion(self.model(*inputs), labels).backward()
+                else:
+                    self.criterion(self.model(inputs), labels).backward()
                 self.optimizer.second_step(zero_grad=True)
             else:
                 self.optimizer.step()
