@@ -62,7 +62,7 @@
     "optimizer": {
       "type": "SAM",
       "kwargs": {
-        "lr": 1e-4
+        "lr": 5e-3
       }
     },
     "lr_scheduler": "linear_warm_up"
